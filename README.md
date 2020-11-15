@@ -17,4 +17,29 @@ And that is all you need to know, but of course I am going all in on this one.
 
 ## Getting the planets in the sky correctly
 
+Before you continue I suggest having some knowledge of trigonometry, as everything revolves around trigonometry in this system. But maybe I may do a good job of explaining everything enough to allow you to at least understand what the program does. Now the reason everything is so complex is because everything is in 2D. Unlike 3D, in a 2D space you can only see in one direction. So if this system where to be a background you would only be able to see a sunrise or a sunset. But to combat this I decided to make the very east of the sky and the very west of the sky in the same direction. So think of the sky as if you where on the north or south pole, it is confusing I know but it just works.
+
 ### For orbited bodies
+
+The formula for getting a orbited body's sky position is as follows:
+```
+posInSky = (O1+X*cos(θ),(O2+Y2)+Y*sin(θ))
+```
+**θ is found by subtracting the current planet's orbit angle and the current planet's rotation angle**
+All this formula is is basically the formula for finding the position of a angle on the circle. Where as O1 is the X offset, O2 is the Y offset, (X,Y) is the circles radius (Making two variables for the radius allows more control), and θ is the current planets orbit angle to the orbited planet. One thing I added was Y2, which is the current planets space Y position. Transformed into GD script is:
+```GDScript
+posInSky = Vector2(OFFSET.x+XSCALE*cos(deg2rad(standardLinePos)),(OFFSET.y - mainPlanet.spaceY)+YSCALE*sin(deg2rad(standardLinePos)))
+```
+It is very important you put the angle in ```deg2rad``` first, otherwise it makes everything all off.
+
+### For orbiting bodies
+
+The formula for getting a orbiting body's sky position is very similar to the orbited bodies formula, however make Y2 be the orbiting planets space Y position.
+```GDScript
+posInSky = Vector2(960 + XSCALE*cos(deg2rad(standardLinePos)),(900+planet.spaceY)+YSCALE*sin(deg2rad(standardLinePos)))
+```
+**standardLinePos is found by subtracting the orbiting planet's orbit angle and the current planet's rotation angle**
+
+### For indirect bodies
+
+In order to do this a lot of things must be done. First get the x and y distance to the object. This is simply done by ```(X2-X1,Y2-Y1)``` where 2 is the current planets Space coordinates. Now get the standardLinePos. Brought up in orbiting bodies, standardLinePos is the planet's position on a perfect unedited one radius circle, called [The Unit Circle](https://www.mathsisfun.com/geometry/unit-circle.html). To get the standardLinePos for a indirect boy 
