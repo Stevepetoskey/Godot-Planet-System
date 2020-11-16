@@ -77,5 +77,5 @@ Now it is onto the hard part, aka more math! First you are going to need to find
 ```GDScript
 p1P2Angle = rad2deg(atan2(abs(currentPlanet.spacePos.y-planet.spacePos.y),abs(currentPlanet.spacePos.x-planet.spacePos.x)))
 ```
-And then do the same to find the angle between the other planet and the sun, just replace the ```currentPlanet``` with the sun object
+And then do the same to find the angle between the other planet and the sun, just replace the ```currentPlanet``` with the sun object.
 
