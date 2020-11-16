@@ -25,12 +25,11 @@ The formula for getting a orbited body's sky position is as follows:
 ```
 posInSky = (O1+X*cos(θ),(O2+Y2)+Y*sin(θ))
 ```
-**θ is found by subtracting the current planet's orbit angle and the current planet's rotation angle**
 All this formula is is basically the formula for finding the position of a angle on the circle. Where as O1 is the X offset, O2 is the Y offset, (X,Y) is the circles radius (Making two variables for the radius allows more control), and θ is the current planets orbit angle to the orbited planet. One thing I added was Y2, which is the current planets space Y position. Transformed into GD script is:
 ```GDScript
-posInSky = Vector2(OFFSET.x+XSCALE*cos(deg2rad(standardLinePos)),(OFFSET.y - mainPlanet.spaceY)+YSCALE*sin(deg2rad(standardLinePos)))
+posInSky = Vector2(OFFSET.x+XSCALE*cos(deg2rad(standardLinePos)),(OFFSET.y - currentPlanet.spaceY)+YSCALE*sin(deg2rad(standardLinePos)))
 ```
-It is very important you put the angle in ```deg2rad``` first, otherwise it makes everything all off.
+It is very important you put the angle in ```deg2rad``` first, otherwise it makes everything all off. Now get the standardLinePos. StandardLinePos is the planet's position on a perfect unedited one radius circle, called [The Unit Circle](https://www.mathsisfun.com/geometry/unit-circle.html). To get the standardLinePos for a orbited body simply subtract the current planets rotation from the current planet's orbit angle 
 
 ### For orbiting bodies
 
@@ -42,4 +41,36 @@ posInSky = Vector2(960 + XSCALE*cos(deg2rad(standardLinePos)),(900+planet.spaceY
 
 ### For indirect bodies
 
-In order to do this a lot of things must be done. First get the x and y distance to the object. This is simply done by ```(X2-X1,Y2-Y1)``` where 2 is the current planets Space coordinates. Now get the standardLinePos. Brought up in orbiting bodies, standardLinePos is the planet's position on a perfect unedited one radius circle, called [The Unit Circle](https://www.mathsisfun.com/geometry/unit-circle.html). To get the standardLinePos for a indirect boy 
+In order to do this a lot of things must be done. First get the x and y distance to the object. This is simply done by ```(X2-X1,Y2-Y1)``` where 2 is the current planets Space coordinates. Now time to get the angle between the main planet and the indirect body. This is where inverse tan is introduced. Inverse tan (aka ```atan()``` in godot) allows you to put y postion divided by the x position to get the angle. However inverse tan can be wonky sometimes and even may crash your game (if y equals 0) so godot has a helpful function called ```atan2()``` which acts just like ```atan``` however it is less wonky and does not crash your game (A possible bug I need to fix is once atan gets to 0 it starts going into negatives until it reaches -180 and switches to 180, so indirect bodies and other things using atan2 may not work properly right now). So to get the angle use the x and y distance from before and do ```angle = atan2(abs(distance.y),abs(distance.x))```. Of course the planet needs to be rotated in the sky depending on the rotation of the current planet, so also add ```angle -= rotation```. Now it is time for the main formula:
+```GDScript
+posInSky = Vector2((960+distance.x)+XSCALE*cos(deg2rad(angle)),((600-currentPlanet.spacePos.y+distance.y)+YSCALE*sin(deg2rad(angle))))
+```
+And now all of the planets, suns, and moons should be in the correct place in the sky.
+
+## Planet shading
+
+**Keep in mind this current version is a bit buggy and may not work as intended**
+
+First things first, on the planet instance (which should only be a sprite with some timers under it) add a shader. This shader is very simple (To simple as of right now, It needs to be able to block out anything behind it) all it needs to do is mask out whatever part is supposed to be shaded, which can be done with this:
+```GLSL
+shader_type canvas_item;
+
+uniform sampler2D mask_texture;
+uniform bool fliped = false;
+uniform float opac = 1.0;
+
+void fragment() {
+	vec2 uv;
+	if (fliped == true) {
+		uv = vec2(1.0-UV.x,UV.y)
+	} else {
+		uv = UV
+	}
+    vec4 colour = texture(TEXTURE, UV);
+    colour.a *= texture(mask_texture, uv).a;
+	colour.a *= opac;
+
+    COLOR = colour;
+}
+```
+Now it is onto the hard part, aka more math! 
