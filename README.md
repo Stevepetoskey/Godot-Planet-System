@@ -49,8 +49,6 @@ And now all of the planets, suns, and moons should be in the correct place in th
 
 ## Planet shading
 
-**Keep in mind this current version is a bit buggy and may not work as intended**
-
 First things first, on the planet instance (which should only be a sprite with some timers under it) add a shader. This shader is very simple (To simple as of right now, It needs to be able to block out anything behind it) all it needs to do is mask out whatever part is supposed to be shaded, which can be done with this:
 ```GLSL
 shader_type canvas_item;
@@ -77,5 +75,18 @@ Now it is onto the hard part, aka more math! First you are going to need to find
 ```GDScript
 p1P2Angle = rad2deg(atan2(abs(currentPlanet.spacePos.y-planet.spacePos.y),abs(currentPlanet.spacePos.x-planet.spacePos.x)))
 ```
-And then do the same to find the angle between the other planet and the sun, just replace the ```currentPlanet``` with the sun object.
+And then do the same to find the angle between the other planet and the sun, just replace the ```currentPlanet``` with the sun object. Next you are going to add the two angles together. Next subtract the sum by 160, although this may seem random, it is what feeds into the planet instance, which I will talk about later. Now simply pass ```round(angle/20)``` to the planet instance, 20 represents how much phases the light has. Now in the planet instance you should have the function that you pass the light level through. It will look like this:
+```GDScript
+func update_light(lightLevel):
+	if lightLevel < 11:
+		material.set_shader_param("fliped",true)
+		material.set_shader_param("mask_texture",phases[lightLevel])
+	if lightLevel >= 11:
+		material.set_shader_param("fliped",false)
+		material.set_shader_param("mask_texture",phases[20-lightLevel])
+```
+The parameter ```lightLevel``` is the ```round(angle/20)``` value you passed into the function. The ```phases``` array is just a array with all the phase textures (In phase order). As you can see you don't need to have the same textures just fliped in the atlas since this function takes care of that. And with that you should have a working planet light shading.
 
+## Everything else
+
+Feel free to explore other small little details I added to this program that is not necessary, but makes it look better. Feel free to use this program for whatever you want, but please give me credit if you use this system. Credit is not necessary though. Although feel free to change things to make it better/add other features.
