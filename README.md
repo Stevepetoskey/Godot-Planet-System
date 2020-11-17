@@ -1,6 +1,7 @@
 # Godot Planet System
 
 ![Thumbnail](/Thumbnails/Thumbnail.gif)
+
 First a few things, I will try to explain this the best I can however I might leave some things out, so please let me know if you are lost a some point. Next this might not work as well as it should, and any time I find a bug I will be sure to update this repository.
 
 ## Setting it up
