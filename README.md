@@ -1,5 +1,6 @@
 # Godot Planet System
 
+![Thumbnail](/Thumbnails/Thumbnail.gif)
 First a few things, I will try to explain this the best I can however I might leave some things out, so please let me know if you are lost a some point. Next this might not work as well as it should, and any time I find a bug I will be sure to update this repository.
 
 ## Setting it up
@@ -48,6 +49,8 @@ posInSky = Vector2((960+distance.x)+XSCALE*cos(deg2rad(angle)),((600-currentPlan
 And now all of the planets, suns, and moons should be in the correct place in the sky.
 
 ## Planet shading
+
+![shading](/Thumbnails/Shading.PNG)
 
 First things first, on the planet instance (which should only be a sprite with some timers under it) add a shader. This shader is very simple (To simple as of right now, It needs to be able to block out anything behind it) all it needs to do is mask out whatever part is supposed to be shaded, which can be done with this:
 ```GLSL
